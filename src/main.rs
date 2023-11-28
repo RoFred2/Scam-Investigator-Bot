@@ -49,6 +49,14 @@ async fn main() {
     let _ = framework_builder.run().await.unwrap();
 }
 
+pub mod Embeds {
+    pub mod scam_log;
+}
+
+pub mod Events {
+    pub mod on_ticket_closed;
+}
+
 pub mod Services {
     pub mod events_service;
 }
