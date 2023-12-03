@@ -45,12 +45,6 @@ async fn on_cancel(ctx : &Context, mci : &MessageComponentInteraction) -> Result
     Ok(())
 }
 
-use poise::Modal;
-#[derive(Debug, poise::Modal)]
-struct MyModal {
-    first_input: String,
-}
-
 pub async fn sm_lb(ctx : &Context, mci : &MessageComponentInteraction) -> Result<(),Error> {
     let sm_values = &mci.data.values;
     let selected = sm_values[0].clone();
