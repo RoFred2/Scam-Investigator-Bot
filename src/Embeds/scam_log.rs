@@ -1,11 +1,12 @@
 use poise::serenity_prelude as serenity;
-use serenity::{User, CreateEmbed, CreateComponents, ButtonStyle, ReactionType};
-
+use serenity::{User, CreateEmbed, CreateComponents, InteractionResponseType, ButtonStyle, ReactionType, builder::CreateInteractionResponseData};
+use serde::{Serialize, Deserialize};
+use serenity::model::prelude::prelude::component::InputTextStyle;
 // Acts as a param builder
+#[derive(Clone,Serialize, Deserialize)]
 pub struct LogTrigger {
     pub author : User,
     pub ticket_id : String,
-    pub ses_id : String,
     pub scammer : String,
     pub victim : String,
     pub evidence : String,
@@ -27,10 +28,6 @@ impl LogTrigger {
 	    .field("🔒 Victim", self.victim, true)
 	    .field("🔒 Evidence", self.evidence, true)
 	    .field("Context", self.context, true)
-	    .footer(|f| {
-		f
-		    .text(format!("Session ID: {}", self.ses_id))
-	    })
 	    .author(|a| {
 		let bot_name = self.author.clone().name;
 		let bot_face = self.author.face();
@@ -52,7 +49,6 @@ impl LogTrigger {
 					    .label("Add Scammer")
 					    .value("add_scammer")
 					    .emoji(ReactionType::Unicode("🕵️".to_string()))
-					    .default_selection(true)
 				    })
 				    .create_option(|opt| {
 					opt
@@ -95,4 +91,30 @@ impl LogTrigger {
 	
 	(embed, components)
     }    
+}
+
+pub fn get_scammer_modal<'a>() -> CreateInteractionResponseData<'a> {
+    let mut ird = CreateInteractionResponseData::default();
+    ird.
+    	title("Please provide a scammer ID")
+	.components(|c| {
+	    c.create_action_row(|ar| {
+		ar.create_input_text(|it| {
+		    it.custom_id("add_scammer_modal")
+			.style(InputTextStyle::Short)
+			.label("Scammer ID")
+			.placeholder("000000000000000000")
+			.min_length(18)
+			.max_length(19)
+			.value("add_scammer_value")
+			.required(true)
+		})
+	    })
+	});
+    ird
+}
+
+pub fn get_id(name : String) -> String {
+    let split_name : Vec<&str> = name.split("-").collect();
+    split_name[1].to_string()
 }
